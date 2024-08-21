@@ -6,7 +6,7 @@ export default function SideBare(){
     <side className=" w-1/4 h-full bg-white" >
     <Side/>
     </side>
-    <main className=" w-3/4 col-span-1 h-full bg-green-500">
+    <main className=" w-3/4 col-span-1 h-full bg-blue-200 ">
     <Outlet/>
     </main>
     
