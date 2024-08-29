@@ -5,7 +5,7 @@ const { Server } = require('socket.io');
 const app=express();
 const server = createServer(app);
 const io = new Server(server);
-
+const db=require("./db/db")
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())
 app.use(express.static("./public"))
@@ -19,7 +19,20 @@ io.on('connection', (socket) => {
     });
   });
  
-// this will emit the event to all connected sockets
-server.listen(port, () => {
-    console.log(`Server is running on PORT ${port}`);
-  }); 
+// this will emit the event to all connected 
+  db.initDb((err,dataBase)=>{
+    if(err){
+      console.log(err)
+    }
+    else{
+      server.listen(port, () => {
+        console.log(`Server is running on PORT ${port}`);
+      }); 
+    }
+    db.getDb().db().collection("users").find().toArray().then(result => {
+      console.log(result);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  })
