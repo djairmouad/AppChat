@@ -10,7 +10,10 @@ app.use(express.urlencoded({extended:true}))
 app.use(express.json())
 app.use(express.static("./public"))
 app.use(cors())
-
+const login=require("./config/authToken")
+const user=require("./Router/user.js")
+app.use("/api/login",login);
+app.use("/api/user",user)
 const port=5000;
 
 io.on('connection', (socket) => {
@@ -29,10 +32,4 @@ io.on('connection', (socket) => {
         console.log(`Server is running on PORT ${port}`);
       }); 
     }
-    db.getDb().db().collection("users").find().toArray().then(result => {
-      console.log(result);
-    })
-    .catch(err => {
-      console.log(err);
-    });
   })
