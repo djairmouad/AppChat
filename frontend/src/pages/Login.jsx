@@ -10,7 +10,7 @@ export default function Login(){
         <input name="password" className=" w-3/5 border rounded-sm pl-1  py-1 outline-none " placeholder="Password"/>
         <div className=" w-3/5 flex justify-start items-center gap-2">
         <button className=" border bg-blue-600 text-white p-1 px-8 font-medium outline-none rounded-lg ">Login</button>
-        <Link to="register" className=" text-sm">Register</Link>
+        <Link to="SignUp" className=" text-sm">Register</Link>
         </div>
         
     </div>
