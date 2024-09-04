@@ -25,10 +25,10 @@ const eventData={
     email:data.get("email"),
     password:data.get("password")
 }
-const token =await login(eventData);
-await localStorage.setItem("token",token)
-if(token){
-    return redirect("/user")
+const result =await login(eventData);
+await localStorage.setItem("token",result.token)
+if(result.token){
+    return redirect("/user/"+result.user.id)
 }
 return null
 }

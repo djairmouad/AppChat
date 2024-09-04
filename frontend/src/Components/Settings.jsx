@@ -2,13 +2,15 @@ import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink } from "react-router-dom";
 
-export default function Settings(){
+export default function Settings({data}){
+    console.log(data)
+    const name=data?.data?.name || ""
     return   <div className="info h-10% font-medium ">
     <ul className="flex justify-around  ">
         <li className="flex items-center gap-1 w-1/3 ">
         <NavLink className="flex items-center gap-1 w-full">
         <FontAwesomeIcon icon={faUser} />
-        <p>Mouad</p>
+        <p>{name}</p>
         </NavLink>
         </li>
         

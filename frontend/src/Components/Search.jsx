@@ -1,14 +1,18 @@
 import {  faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useQuery } from "@tanstack/react-query";
-import { SearchUsers } from "../utils/http";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { addFriend, SearchUsers } from "../utils/http";
+import { useParams } from "react-router-dom";
 
 export default function Search({include}){
     const {data,isPending,isError}=useQuery({
         queryKey:["users"],
         queryFn:SearchUsers
     })
-    console.log(include);
+    const {id}=useParams();
+    const {mutate,isLoading}=useMutation({
+        mutationFn:addFriend
+    })
     let users
     if(include===""){
         users=[]
@@ -17,17 +21,18 @@ export default function Search({include}){
             return item.name.includes(include.trim())
         })
     }
-    console.log(users);
     if(isError && isPending){
         return <p>pending...</p>
     }
-    console.log(data);
+    function HandelAddFriend(id_Friend){
+    mutate({id,id_Friend})
+    }
     return <ul className=" h-fit bg-white">
     {users?.map((item)=>
     (
-        <li key={item.id} className="flex items-center h-7 justify-between px-4 ">
+        <li key={item._id} className="flex items-center h-7 justify-between px-4 ">
         <p>{item.name}</p>
-        <button>
+        <button onClick={()=>HandelAddFriend(item._id)}>
         <FontAwesomeIcon icon={faLocationArrow} className=" w-3 text-blue-500" />
         </button>
     </li>

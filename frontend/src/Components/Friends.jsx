@@ -2,7 +2,8 @@ import { faComments } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink } from "react-router-dom";
 
-export default function Friends(){
+export default function Friends({data}){
+    const Friends=data?.data?.Friends || []
     return    <ul className=" flex flex-col h-90%     pt-2  ">
     <li className=" pl-2 pb-2 flex gap-2 ">
     <FontAwesomeIcon  className="w-7 h-6 text-blue-700" icon={faComments} />

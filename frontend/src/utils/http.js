@@ -10,7 +10,7 @@ export async function login(eventData) {
         body:JSON.stringify(eventData)
     });
     const data=await response.json();
-    return data.token
+    return data
 }
 
 export async function SearchUsers() {
@@ -39,4 +39,33 @@ const token=getToken();
 });
 const data=await response.json();
 return data
+}
+
+export async function fetchUser(id) {
+ const token=getToken();
+ const response=await fetch("http://localhost:5000/api/user/"+id,{
+    method:"GET",
+    headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+token
+    }
+ })
+ const data=await response.json();
+ return data
+}
+
+export async function addFriend({id,id_Friend}) {
+    console.log(id_Friend);
+    const token=getToken();
+    const response=await fetch("http://localhost:5000/api/user/"+id,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer "+token
+        },
+        body:JSON.stringify({id_Friend:id_Friend})
+    })
+    const data=response.json();
+    console.log(data);
+    return data
 }
