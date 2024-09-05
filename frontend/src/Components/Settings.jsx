@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 
 export default function Settings({data}){
     console.log(data)
-    const name=data?.data?.name || ""
+    const name=data?.data[0].name || ""
     return   <div className="info h-10% font-medium ">
     <ul className="flex justify-around  ">
         <li className="flex items-center gap-1 w-1/3 ">

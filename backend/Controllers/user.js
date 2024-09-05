@@ -25,8 +25,9 @@ const createUser=(req,res)=>{
 
 const addFriend=(req,res)=>{
   const {id}=req.params;
-  const {id_Friend}=req.body;
-  db.getDb().db().collection("users").updateOne({_id: new ObjectId(id)},{$push:{Friends:new ObjectId(id_Friend)}})
+  let {id_Friend}=req.body;
+  id_Friend=ObjectId(id_Friend)
+  db.getDb().db().collection("users").updateOne({_id: new ObjectId(id)},{$push:{Friends:id_Friend}})
   .then(result=>{
    res.status(200).json({success:true,message:"friend had been add"})
   }).catch(err=>{
@@ -46,4 +47,27 @@ const fetchUser=(req,res)=>{
       res.status(500).json({success:false,message:err})
    })
 }
-module.exports={search,createUser,addFriend,fetchUser}
+
+const fetchFriendUser=(req,res)=>{
+const {id}=req.params;
+db.getDb().db().collection("users").aggregate([
+   { $match: { _id: new ObjectId(id) } },
+   {
+     $lookup: {
+       from: "users",
+       localField: "Friends",
+       foreignField: "_id",
+       as: "FriendUser"
+     }
+   }
+ ]).toArray()
+ .then((result) => {
+   res.status(200).json({ success: true, data: result });
+ })
+ .catch(err => {
+   console.log(err);
+   return res.status(500).json({ success: false, message: err });
+ });
+
+}
+module.exports={search,createUser,addFriend,fetchUser,fetchFriendUser}

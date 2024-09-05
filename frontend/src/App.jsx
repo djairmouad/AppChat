@@ -13,7 +13,10 @@ const router=createBrowserRouter([
     {index:true,element:<Login/>,action:actionLogin},
     {path:"SignUp",element:<SignUp/>,action:actionSignUp},
     {path:"user",element:<SideBare/>,children:[
-      {path:":id",element:<Chat/>}
+      {path:":id",children:[
+        {path:":friend",element:<Chat/>}
+      ]},
+      
     ]}
   ]},
 ])
