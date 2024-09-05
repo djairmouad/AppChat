@@ -1,7 +1,7 @@
 import {  faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { addFriend, SearchUsers } from "../utils/http";
+import { addFriend, queryClient, SearchUsers } from "../utils/http";
 import { useParams } from "react-router-dom";
 
 export default function Search({include}){
@@ -11,7 +11,8 @@ export default function Search({include}){
     })
     const {id}=useParams();
     const {mutate,isLoading}=useMutation({
-        mutationFn:addFriend
+        mutationFn:addFriend,
+        
     })
     let users
     if(include===""){
@@ -25,7 +26,10 @@ export default function Search({include}){
         return <p>pending...</p>
     }
     function HandelAddFriend(id_Friend){
-    mutate({id,id_Friend})
+    mutate({id,id_Friend});
+    queryClient.invalidateQueries([{
+        queryKey:"fetchUser"
+    }])
     }
     return <ul className=" h-fit bg-white">
     {users?.map((item)=>

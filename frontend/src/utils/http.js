@@ -1,6 +1,7 @@
+import { QueryClient } from "@tanstack/react-query";
 import getToken from "./getAuth";
 
-
+export const queryClient=new QueryClient();
 export async function login(eventData) {
     const response=await fetch("http://localhost:5000/api/login",{
         method:"POST",

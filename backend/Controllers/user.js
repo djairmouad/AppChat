@@ -24,10 +24,11 @@ const createUser=(req,res)=>{
 }
 
 const addFriend=(req,res)=>{
-  const {id}=req.params;
+  let {id}=req.params;
   let {id_Friend}=req.body;
-  id_Friend=ObjectId(id_Friend)
-  db.getDb().db().collection("users").updateOne({_id: new ObjectId(id)},{$push:{Friends:id_Friend}})
+  id=new ObjectId(id);
+  id_Friend= new ObjectId(id_Friend)
+  db.getDb().db().collection("users").updateOne({_id: id},{$push:{Friends:id_Friend}})
   .then(result=>{
    res.status(200).json({success:true,message:"friend had been add"})
   }).catch(err=>{
