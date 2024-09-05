@@ -20,6 +20,9 @@ export default function Search({include}){
     }else{
         users=data?.filter((item)=>{
             return item.name.includes(include.trim())
+        });
+        users=users.filter(item=>{
+            return item._id!==id
         })
     }
     if(isError && isPending){

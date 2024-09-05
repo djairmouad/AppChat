@@ -28,9 +28,15 @@ const addFriend=(req,res)=>{
   let {id_Friend}=req.body;
   id=new ObjectId(id);
   id_Friend= new ObjectId(id_Friend)
-  db.getDb().db().collection("users").updateOne({_id: id},{$push:{Friends:id_Friend}})
+  db.getDb().db().collection("users").updateOne({_id: id},{$addToSet:{Friends:id_Friend}})
   .then(result=>{
-   res.status(200).json({success:true,message:"friend had been add"})
+   db.getDb().db().collection("users").updateOne({_id:id_Friend},{$addToSet:{Friends:id}})
+   .then(result=>{
+      res.status(200).json({success:true,message:"friend had been add"});
+   }).catch(err=>{
+    console.log(err);
+    res.status(200).json({success:false,message:err})
+   })
   }).catch(err=>{
    console.log(err);
    res.status(200).json({success:false,message:err})
