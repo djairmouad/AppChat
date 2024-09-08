@@ -5,7 +5,6 @@ import { NavLink, useParams } from "react-router-dom";
 export default function Friends({data}){
     const Friends=data?.data[0].FriendUser || []
     const {id}=useParams();
-    console.log(id);
     return    <ul className=" flex flex-col h-90%     pt-2  ">
     <li className=" pl-2 pb-2 flex gap-2 ">
     <FontAwesomeIcon  className="w-7 h-6 text-blue-700" icon={faComments} />

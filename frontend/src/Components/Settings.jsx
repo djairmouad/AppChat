@@ -27,4 +27,5 @@ export default function Settings({data}){
         </li>
     </ul>
     </div>
-}
+} 
+

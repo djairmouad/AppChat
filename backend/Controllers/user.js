@@ -77,4 +77,17 @@ db.getDb().db().collection("users").aggregate([
  });
 
 }
-module.exports={search,createUser,addFriend,fetchUser,fetchFriendUser}
+
+const fetchConversation=(req,res)=>{
+   let {id,id_Friend}=req.params;
+   id=new ObjectId(id);
+   id_Friend=new ObjectId(id_Friend);
+   db.getDb().db().collection("conversation").findOne({participants:{$all:[id,id_Friend]}})
+   .then(result=>{
+      return res.status(200).json({success:true,data:result})
+   }).catch(err=>{
+      console.log(err)
+      return res.status(500).json({success:false,message:err})
+   })
+}
+module.exports={search,createUser,addFriend,fetchUser,fetchFriendUser,fetchConversation}

@@ -4,7 +4,11 @@ const { createServer } = require('node:http');
 const { Server } = require('socket.io');
 const app=express();
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(server,{
+  cors: {
+    origin: "http://localhost:5173"
+  }
+});
 const db=require("./db/db")
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())
@@ -17,9 +21,9 @@ app.use("/api/user",user)
 const port=5000;
 
 io.on('connection', (socket) => {
-    socket.on('chat message', (msg) => {
-        io.emit('chat message', msg);
-    });
+  socket.on("Message",(receiverId,message)=>{
+    socket.emit(receiverId,message);
+  })
   });
  
 // this will emit the event to all connected 
