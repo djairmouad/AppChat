@@ -6,6 +6,8 @@ import SideBare from './root/SideBare'
 import Chat from './pages/Chat'
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
 import SignUp,{action as actionSignUp} from './pages/SignUp'
+import store from '../store'
+import {Provider} from "react-redux"
 function App() {
 const queryClient=new QueryClient()
 const router=createBrowserRouter([
@@ -21,7 +23,9 @@ const router=createBrowserRouter([
   ]},
 ])
   return <QueryClientProvider client={queryClient}>
+    <Provider store={store}>
     <RouterProvider router={router}/>
+    </Provider>
   </QueryClientProvider>
 }
 

@@ -28,6 +28,8 @@ const addFriend=(req,res)=>{
   let {id_Friend}=req.body;
   id=new ObjectId(id);
   id_Friend= new ObjectId(id_Friend)
+  try{
+   //add Friend to Users
   db.getDb().db().collection("users").updateOne({_id: id},{$addToSet:{Friends:id_Friend}})
   .then(result=>{
    db.getDb().db().collection("users").updateOne({_id:id_Friend},{$addToSet:{Friends:id}})
@@ -41,6 +43,27 @@ const addFriend=(req,res)=>{
    console.log(err);
    res.status(200).json({success:false,message:err})
   })
+  // check if there is a conversation between users or no 
+  db.getDb().db().collection("conversation").findOne({participants:{$all:[id,id_Friend]}})
+  .then(result=>{
+   if(result===null){
+      // Insert conversation
+    return  db.getDb().db().collection("conversation").insertOne({
+         participants: [
+            id,
+            id_Friend
+          ],
+          messages:[]
+        })
+   }else{
+      return null
+   }
+  }).catch(err=>{
+   console.log(err);
+  })
+}catch(err){
+   console.log(err)
+}
 }
 
 const fetchUser=(req,res)=>{
@@ -90,4 +113,25 @@ const fetchConversation=(req,res)=>{
       return res.status(500).json({success:false,message:err})
    })
 }
-module.exports={search,createUser,addFriend,fetchUser,fetchFriendUser,fetchConversation}
+const saveConversation = (req, res) => {
+   let { id, id_Friend } = req.params;
+   let { info } = req.body;
+   info=JSON.parse(info);
+   id = new ObjectId(id);
+   id_Friend = new ObjectId(id_Friend);
+   db.getDb().db().collection("conversation").updateOne(
+       { participants: { $all: [id, id_Friend] } }, // Match condition
+       { $push: { messages: {...info} } } // Update with $push
+   )
+   .then(result => {
+       return res.status(200).json({ success: true, data: result });
+   })
+   .catch(err => {
+       console.log(err);
+       return res.status(500).json({ success: false, message: err });
+   });
+};
+
+module.exports={search,createUser,addFriend,fetchUser,fetchFriendUser,fetchConversation,
+   saveConversation 
+}
