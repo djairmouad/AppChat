@@ -9,7 +9,6 @@ router.post("/",(req,res)=>{
         const user = { id: data._id, email: data.email };
         // Generate a JWT token with the user data and private key
         const token = jwt.sign(user, privateKey, { expiresIn: "1h" });
-        
         res.status(200).json({success:true,token:token,user})
       })
       .catch(err => {

@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 export default function Inputs(){
     const { friend, id } = useParams();
     const message = useRef();
+    const file=useRef();
     const dispatch=useDispatch();
     const {mutate,isError,isPending}=useMutation({
       mutationFn:saveConversation
@@ -34,10 +35,10 @@ export default function Inputs(){
             status:"sent",
         }
         socket.emit("Message", friend, info);
-        
+        const FileUpload=file.current.files[0]
         dispatch(conversationAction.newMessage({...info}))
         dispatch(conversationAction.deleteMessage())
-        mutate({info,id,friend})
+        mutate({info,id,friend,FileUpload})
         message.current.value = "";
       }
       if(isError || isPending){
@@ -53,7 +54,9 @@ export default function Inputs(){
     />
     <div className="w-10% h-3/4 relative cursor-pointer">
       <input
+      ref={file}
         type="file"
+        name="file"
         className="relative z-10 w-full h-full opacity-0 cursor-pointer"
       />
       <FontAwesomeIcon

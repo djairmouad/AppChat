@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { createServer } = require("http"); // Fixed require path to 'http' instead of 'node:http'
 const { Server } = require("socket.io");
+const multer=require("multer")
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {

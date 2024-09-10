@@ -11,8 +11,9 @@ export default function Chat() {
   const { friend, id } = useParams();
   const [data,setData]=useState([]);
   const dispatch=useDispatch();
-  dispatch(conversationAction.deleteArray())
+  
   useEffect(() => {
+    dispatch(conversationAction.deleteArray())
     const fetchData = async () => {
       try {
         let response = await fetchConversation({ id, friend });
@@ -27,15 +28,20 @@ export default function Chat() {
 
     fetchData();
   }, [id, friend]);
+  
   return (
     <div className="flex flex-col justify-end h-90%">
       <ul className="h-full p-3 overflow-y-auto">
       {data.map(item=>{
         if(item.senderId===friend){
-           return <li key={item.timestamp} className="w-fit bg-white py-1 px-2 mb-3 rounded-md">{item.content}</li>
+           return <div key={item.timestamp}>
+           <li className="w-fit bg-white py-1 px-2 mb-3 rounded-md">{item.content}</li>
+           {item.nameFile? <img  className=" w-4/12 " src={"http://localhost:5000/upload/" + item.nameFile} />:null} 
+           </div>
         }else{
-           return <ul key={item.timestamp} className="bg-transparent flex justify-end mb-3">
+           return <ul style={{display:"flex",flexDirection:"column",alignItems:"end" , alignContent:"end"}} key={item.timestamp} className="bg-transparent mb-3 gap-2">
           <li className="w-fit bg-blue-800 py-1 px-2 rounded-md text-white">{item.content}</li>
+          {item.nameFile? <img  className=" w-4/12" src={"http://localhost:5000/upload/" + item.nameFile} />:null} 
         </ul>
         }
        })}
