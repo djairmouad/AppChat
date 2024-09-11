@@ -72,13 +72,16 @@ export async function addFriend({id,id_Friend}) {
 }
 
 export async function saveConversation({ info, id, friend, FileUpload }) {
-  try {
     const token = getToken(); // Assuming this is a valid token
+    axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+  try {
     const formData = new FormData();
     const { senderId, content, status, timestamp } = info;
 
     // Append fields to FormData
-    formData.append('file', FileUpload);
+    if(FileUpload){
+        formData.append('fileUpload', FileUpload);
+    }
     formData.append('content', content);
     formData.append('senderId', senderId);
     formData.append('status', status);
@@ -91,7 +94,7 @@ export async function saveConversation({ info, id, friend, FileUpload }) {
       {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`, // Include token if needed
+          "Authorization":"Bearer "+token
         },
       }
     );

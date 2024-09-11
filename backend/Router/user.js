@@ -22,9 +22,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage,
-});
+})
+
 router.route("/search").get(search);
 router.route("/create").post(createUser)
 router.route("/:id").post(addFriend).get(fetchFriendUser)
-router.route("/:id/:id_Friend").get(fetchConversation).post(upload.single("file"),saveConversation)
+router.route("/:id/:id_Friend").get(fetchConversation).post(upload.single("fileUpload") ,saveConversation)
 module.exports=router

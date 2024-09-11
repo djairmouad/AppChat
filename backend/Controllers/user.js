@@ -117,8 +117,10 @@ const saveConversation = (req, res) => {
    let { id, id_Friend } = req.params;
    let { senderId,content,status,timestamp } = req.body;
    let info={ senderId,content,status,timestamp}
-   if(req.file.filename){
-      info={...info,nameFile:req.file.filename}
+   if(req.file){
+      if(req.file.filename){
+         info={...info,nameFile:req.file.filename}
+      }
    }
    id = new ObjectId(id);
    id_Friend = new ObjectId(id_Friend);

@@ -4,6 +4,8 @@ const { createServer } = require("http"); // Fixed require path to 'http' instea
 const { Server } = require("socket.io");
 const multer=require("multer")
 const app = express();
+const {authJWT} =require("./Middleware/verifyAuth")
+const fs = require('fs');
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
@@ -18,8 +20,8 @@ app.use(cors());
 
 const login = require("./config/authToken");
 const user = require("./Router/user.js");
-app.use("/api/login", login);
-app.use("/api/user", user);
+app.use("/api/login",login);
+app.use("/api/user",authJWT,user);
 
 const port = 5000;
 

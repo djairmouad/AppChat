@@ -18,7 +18,7 @@ export default function Chat() {
       try {
         let response = await fetchConversation({ id, friend });
         let messages = response?.data?.messages || [];
-        messages=messages.slice(-7)
+        messages=messages.slice(-3)
         setData(messages);
         console.log(messages);
       } catch (error) {

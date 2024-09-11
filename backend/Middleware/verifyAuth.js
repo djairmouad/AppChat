@@ -4,7 +4,7 @@ const privateKey="HelloWorld";
 
 
 function authJWT(req,res,next){
-    const authHeader= req.headers["Authorization"];
+    const authHeader= req.headers["authorization"];
     const token=authHeader && authHeader.split(" ")[1];
     if(!token){
         return res.status(500).json({success:false,message:"Unauthorized: Missing token"})
@@ -13,7 +13,6 @@ function authJWT(req,res,next){
         if(err){
             return res.status(403)
         }
-        console.log(decoded)
         req.user=decoded;
         next()
     })
