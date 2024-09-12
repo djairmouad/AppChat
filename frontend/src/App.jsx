@@ -8,6 +8,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
 import SignUp,{action as actionSignUp} from './pages/SignUp'
 import store from '../store'
 import {Provider} from "react-redux"
+import Profile from './pages/Profile'
 function App() {
 const queryClient=new QueryClient()
 const router=createBrowserRouter([
@@ -16,6 +17,7 @@ const router=createBrowserRouter([
     {path:"SignUp",element:<SignUp/>,action:actionSignUp},
     {path:"user",element:<SideBare/>,children:[
       {path:":id",children:[
+        {index:true,element:<Profile/>},
         {path:":friend",element:<Chat/>}
       ]},
       

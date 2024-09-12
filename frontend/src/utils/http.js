@@ -121,3 +121,30 @@ export async function fetchConversation({id,friend}) {
     console.log(data);
     return data
 }
+
+export async function UpdateProfile(data) {
+    console.log(data);
+    let formData = new FormData();
+    formData.append("id", data.id);
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    if(data.profileImage!==""){
+        formData.append("profile", data.profileImage);
+    }
+    try {
+        const token = getToken();
+        if (!token) {
+            throw new Error("No token found");
+        }
+
+        axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+        // Note: For FormData, you don't need to specify Content-Type header, axios does it automatically.
+        const response = await axios.post("http://localhost:5000/api/user/profile/"+data.id, formData,{
+            'Content-Type': 'multipart/form-data',
+        });
+        return response;
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        return { success: false, error: error.message };
+    }
+}

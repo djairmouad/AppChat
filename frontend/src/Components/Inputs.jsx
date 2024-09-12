@@ -18,6 +18,7 @@ export default function Inputs(){
     })
     useEffect(() => {
         socket.on(id, (message) => {
+          console.log(message);
           dispatch(conversationAction.addMessageToArray({...message}))
         });
             // Cleanup to avoid multiple listeners
@@ -27,19 +28,23 @@ export default function Inputs(){
     }, [id]);
 
     function handleSend() { // Fixed typo: 'HandelSend' -> 'handleSend'
-        const newMessage = message.current.value;
+      const newMessage = message.current.value;
+        const FileUpload=file.current.files[0]
+      if(newMessage!=="" || FileUpload!==undefined ){
+        const nameFile=FileUpload?.name || "";
         const info={
             senderId:id,
             content:newMessage,
             timestamp:new Date().toISOString(),
             status:"sent",
+            nameFile:nameFile
         }
-        socket.emit("Message", friend, info);
-        const FileUpload=file.current.files[0]
+        socket.emit("Message", friend, info,nameFile,FileUpload);
         dispatch(conversationAction.newMessage({...info}))
         dispatch(conversationAction.deleteMessage())
         mutate({info,id,friend,FileUpload})
         message.current.value = "";
+      }
       }
       if(isError || isPending){
         return <p>error</p>

@@ -11,7 +11,6 @@ export default function Chat() {
   const { friend, id } = useParams();
   const [data,setData]=useState([]);
   const dispatch=useDispatch();
-  
   useEffect(() => {
     dispatch(conversationAction.deleteArray())
     const fetchData = async () => {
@@ -36,12 +35,12 @@ export default function Chat() {
         if(item.senderId===friend){
            return <div key={item.timestamp}>
            <li className="w-fit bg-white py-1 px-2 mb-3 rounded-md">{item.content}</li>
-           {item.nameFile? <img  className=" w-4/12 " src={"http://localhost:5000/upload/" + item.nameFile} />:null} 
+           {item.nameFile? <img  className=" w-4/12 my-1 " src={"http://localhost:5000/upload/" + item.nameFile} />:null} 
            </div>
         }else{
            return <ul style={{display:"flex",flexDirection:"column",alignItems:"end" , alignContent:"end"}} key={item.timestamp} className="bg-transparent mb-3 gap-2">
           <li className="w-fit bg-blue-800 py-1 px-2 rounded-md text-white">{item.content}</li>
-          {item.nameFile? <img  className=" w-4/12" src={"http://localhost:5000/upload/" + item.nameFile} />:null} 
+          {item.nameFile? <img  className=" w-4/12 my-1" src={"http://localhost:5000/upload/" + item.nameFile} />:null} 
         </ul>
         }
        })}

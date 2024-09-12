@@ -2,6 +2,7 @@
 const db=require("../db/db")
 const mongodb=require("mongodb")
 const ObjectId=mongodb.ObjectId;
+const fs=require("fs")
 const search=(req,res)=>{
  db.getDb().db().collection("users").find().toArray()
  .then((result) => {
@@ -137,6 +138,39 @@ const saveConversation = (req, res) => {
    });
 };
 
+const updateProfile = (req, res) => {
+   const { name, email } = req.body
+   let { id } = req.params;
+   try {
+      id = new ObjectId(id);  // Convert the ID to ObjectId
+   } catch (err) {
+      return res.status(400).json({ success: false, message: 'Invalid ID format' });
+   }
+   
+   let nameFile = "";
+
+   let updateData = { 
+      name: name, 
+      email: email 
+   };
+
+   if (req.file && req.file.filename) {
+      nameFile = req.file.filename;
+      updateData={...updateData,profileImage: nameFile}
+   }
+   
+   db.getDb().db().collection("users").updateOne(
+      { _id: id },
+      { $set: updateData }
+   )
+   .then(result => {
+      return res.status(200).json({ success: true, data: result });
+   })
+   .catch(err => {
+      console.error(err);
+      return res.status(500).json({ success: false, message: 'Internal Server Error' });
+   });
+};
 module.exports={search,createUser,addFriend,fetchUser,fetchFriendUser,fetchConversation,
-   saveConversation 
+   saveConversation,updateProfile
 }

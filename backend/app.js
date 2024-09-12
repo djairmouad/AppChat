@@ -11,6 +11,7 @@ const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
   },
+  maxHttpBufferSize: 1e8 // 100 MB
 });
 const db = require("./db/db");
 app.use(express.urlencoded({ extended: true }));
@@ -26,7 +27,15 @@ app.use("/api/user",authJWT,user);
 const port = 5000;
 
 io.on("connection", (socket) => {
-  socket.on("Message", (receiverId, message) => {
+  socket.on("Message", (receiverId, message,nameFile,FileUpload) => {
+    if(nameFile!==""){
+      fs.writeFile(`public/upload/${nameFile}`, FileUpload, (err) => {
+        if(err){
+          console.log(err)
+        }
+    });
+    }
+
     io.emit(receiverId, message); // Fixed indentation
   });
 });

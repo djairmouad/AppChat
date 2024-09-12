@@ -1,5 +1,7 @@
 const express=require("express");
-const { search,createUser,addFriend,fetchUser,fetchFriendUser,fetchConversation,saveConversation  } = require("../Controllers/user");
+const { search,createUser,addFriend,fetchUser,fetchFriendUser,fetchConversation,saveConversation,
+  updateProfile
+  } = require("../Controllers/user");
 const multer=require("multer")
 const path=require("path")
 const router=express.Router();
@@ -27,5 +29,6 @@ const upload = multer({
 router.route("/search").get(search);
 router.route("/create").post(createUser)
 router.route("/:id").post(addFriend).get(fetchFriendUser)
+router.route("/profile/:id").post(upload.single("profile"),updateProfile)
 router.route("/:id/:id_Friend").get(fetchConversation).post(upload.single("fileUpload") ,saveConversation)
 module.exports=router
