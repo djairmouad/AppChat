@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { saveConversation } from "../utils/http";
 import { useParams } from "react-router-dom";
+import { callAction } from "../../store/call";
 
 export default function Inputs(){
     const { friend, id } = useParams();
@@ -46,6 +47,12 @@ export default function Inputs(){
         message.current.value = "";
       }
       }
+
+    function handleCall(friend){
+      socket.emit(`call`,friend)
+      }
+
+    
       if(isError || isPending){
         return <p>error</p>
       }
@@ -71,6 +78,9 @@ export default function Inputs(){
     </div>
     <button onClick={handleSend} className="w-10% h-10% flex items-center">
       <FontAwesomeIcon icon={faPaperPlane} />
+    </button>
+    <button onClick={()=>handleCall(friend)} className="w-10% h-10% flex items-center">
+      Call
     </button>
   </ul>
 }

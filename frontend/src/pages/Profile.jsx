@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import image from "../assets/profile.jpg";
-import { fetchUser, UpdateProfile } from "../utils/http";
+import { fetchUser, queryClient, UpdateProfile } from "../utils/http";
 import { useRef } from "react";
 import { useParams } from "react-router-dom";
 
@@ -19,7 +19,6 @@ export default function Profile() {
   });
 
   const profile = data?.data[0] || "";
-
   function handleUpdate() {
     const profileImage = file.current.files[0];
     let data={id:id,name:name.current.value,email:email.current.value}
@@ -32,6 +31,10 @@ export default function Profile() {
       onError: (error) => {
         console.error("Mutation error:", error);
       },
+      onSuccess:()=>{
+       console.log(profile);
+       queryClient.invalidateQueries({queryKey:["fetchUser",id]});
+      }
     });
   }
   

@@ -33,11 +33,18 @@ io.on("connection", (socket) => {
         if(err){
           console.log(err)
         }
+        return io.emit(receiverId, message); // Fixed indentation
     });
+    }else{
+      io.emit(receiverId, message); // Fixed indentation
     }
 
-    io.emit(receiverId, message); // Fixed indentation
+    
   });
+  socket.on(`call`,(friend)=>{
+    const show=true;
+    socket.emit(`call-${friend}`,show)
+  })
 });
 
 // Ensured indentation and comment format

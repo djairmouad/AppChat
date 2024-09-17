@@ -14,8 +14,8 @@ export default function Friends({data}){
         return  <NavLink key={item._id} to={`${id}/${item._id}`} className={({ isActive }) => (isActive ? "bg-blue-200" : "bg-blue-300 ")}>
         <ul className="flex border border-white border-r-0 py-1">
         {console.log(item)}
-        {item.profileImage==="" || item.profileImage===undefined?<img src={image} className="w-20  rounded-full" alt="item" />:
-            <img src={"http://localhost:5000/upload/"+item.profileImage} className="w-20  rounded-full border-4 border-white  " alt="item" />
+        {item.profileImage==="" || item.profileImage===undefined?<img src={image} className="w-12 h-12     rounded-full" alt="item" />:
+            <img src={"http://localhost:5000/upload/"+item.profileImage} className="w-12 h-12  rounded-full border-4 border-white  " alt="item" />
         }
         <li className=" border border-white border-none py-2 pl-1 text-ms font-medium">
         {item.name}

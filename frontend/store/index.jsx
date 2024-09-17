@@ -1,8 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import conversationReducer from "./conversation";
+import callReducers from "./call";
 
 const store=configureStore({
-    reducer:{conversation:conversationReducer}
+    reducer:{conversation:conversationReducer,call:callReducers}
 })
 
 
