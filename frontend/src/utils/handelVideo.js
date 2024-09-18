@@ -1,7 +1,6 @@
 import socket from "./socket";
 
 let localStream;
-let remoteStream;
 let peerConnection;
 let didIOffer = false;
 
@@ -17,14 +16,14 @@ const peerConfiguration = {
 };
 
 // Function to handle the video
-const handelVideo = async (localVideo, remoteVideo) => {
-  await call(localVideo, remoteVideo);
+const handelVideo = async (localVideo, remoteVideo, username) => {
+  await call(localVideo, remoteVideo, username);
 };
 
 // Function to initiate the call
-const call = async (localVideo, remoteVideo) => {
+const call = async (localVideo, remoteVideo, username) => {
   await fetchUserMedia(localVideo);
-  peerConnection = await createPeerConnection(remoteVideo);
+  peerConnection = await createPeerConnection(remoteVideo, username);
   
   try {
     console.log("Creating offer...");
@@ -54,12 +53,12 @@ const fetchUserMedia = async (localVideo) => {
 };
 
 // Function to create a new peer connection
-const createPeerConnection = async (remoteVideo) => {
+const createPeerConnection = async (remoteVideo, username, offerObj) => {
   // Create a new RTCPeerConnection
   const peerConnection = new RTCPeerConnection(peerConfiguration);
 
   // Initialize remote stream
-  remoteStream = new MediaStream();
+  const remoteStream = new MediaStream();
   remoteVideo.srcObject = remoteStream;
 
   // Add local stream tracks to the peer connection
@@ -73,7 +72,7 @@ const createPeerConnection = async (remoteVideo) => {
       console.log("ICE candidate found!", event.candidate);
       socket.emit('sendIceCandidateToSignalingServer', {
         iceCandidate: event.candidate,
-        iceUserName: "Mouad",
+        iceUserName: username,
         didIOffer
       });
     }
@@ -95,7 +94,42 @@ const createPeerConnection = async (remoteVideo) => {
     }
   };
 
+  if (offerObj) {
+    // Set the remote description if an offerObj is provided
+    await peerConnection.setRemoteDescription(offerObj.offer);
+  }
+
   return peerConnection;
+};
+
+export const answerOffer = async (localVideo, remoteVideo, username, offerObj) => {
+  await fetchUserMedia(localVideo);
+  peerConnection = await createPeerConnection(remoteVideo, username, offerObj)
+  console.log(peerConnection)
+  const answer = await peerConnection.createAnswer();
+  console.log(answer)
+  await peerConnection.setLocalDescription(answer);
+  console.log("offerObj:", offerObj);
+  console.log("answer:", answer);
+  console.log("peerConnection.signalingState:", peerConnection.signalingState);
+  offerObj.answer = answer;
+  const offerIceCandidates = await socket.emitWithAck('newAnswer', offerObj);
+  offerIceCandidates.forEach(c => {
+    peerConnection.addIceCandidate(c);
+    console.log("======Added Ice Candidate======");
+  });
+  console.log("offerIceCandidates:", offerIceCandidates);
+};
+
+export const addAnswer = async (offerObj) => {
+  // Add the answer to the peer connection
+    await peerConnection.setRemoteDescription(offerObj.answer)
+  console.log("Added answer to peer connection.");
+};
+
+export const addNewIceCandidate = (iceCandidate) => {
+  peerConnection.addIceCandidate(iceCandidate);
+  console.log("======Added Ice Candidate======");
 };
 
 export default handelVideo;

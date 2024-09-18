@@ -6,14 +6,14 @@ import { useDispatch } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { saveConversation } from "../utils/http";
-import { useParams } from "react-router-dom";
-import { callAction } from "../../store/call";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function Inputs(){
     const { friend, id } = useParams();
     const message = useRef();
     const file=useRef();
     const dispatch=useDispatch();
+    const navigate = useNavigate();
     const {mutate,isError,isPending}=useMutation({
       mutationFn:saveConversation
     })
@@ -49,7 +49,8 @@ export default function Inputs(){
       }
 
     function handleCall(friend){
-      socket.emit(`call`,friend)
+      socket.emit(`call`,id,friend)
+      navigate(`/video?id=${id}&friend=${friend}`);
       }
 
     

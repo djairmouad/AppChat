@@ -1,8 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import image from "../assets/profile.jpg";
 import { fetchUser, queryClient, UpdateProfile } from "../utils/http";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import socket from "../utils/socket";
 
 export default function Profile() {
   const { id } = useParams(); // Move this above the useQuery
@@ -10,7 +11,6 @@ export default function Profile() {
     queryKey: ["fetchUser", id], // Include id as part of the queryKey
     queryFn: () => fetchUser(id),
   });
-
   const name = useRef();
   const email = useRef();
   const file = useRef();
@@ -26,7 +26,6 @@ export default function Profile() {
     if (profileImage) {
       data={...data,profileImage}
     }
-  
     mutate(data, {
       onError: (error) => {
         console.error("Mutation error:", error);
@@ -38,7 +37,6 @@ export default function Profile() {
     });
   }
   
-console.log(profile.profileImage);
   return (
     <ul className="w-1/2 flex flex-col gap-5 pl-5">
       <li className="relative">
