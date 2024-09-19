@@ -15,29 +15,6 @@ const peerConfiguration = {
   ]
 };
 
-// Function to handle the video
-const handelVideo = async (localVideo, remoteVideo, username) => {
-  await call(localVideo, remoteVideo, username);
-};
-
-// Function to initiate the call
-const call = async (localVideo, remoteVideo, username) => {
-  await fetchUserMedia(localVideo);
-  peerConnection = await createPeerConnection(remoteVideo, username);
-  
-  try {
-    console.log("Creating offer...");
-    const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
-    didIOffer = true;
-    
-    // Send offer to the signaling server
-    socket.emit('newOffer', offer);
-  } catch (err) {
-    console.error("Error creating offer:", err);
-  }
-};
-
 // Function to fetch user media (video and audio)
 const fetchUserMedia = async (localVideo) => {
   try {
@@ -54,82 +31,133 @@ const fetchUserMedia = async (localVideo) => {
 
 // Function to create a new peer connection
 const createPeerConnection = async (remoteVideo, username, offerObj) => {
-  // Create a new RTCPeerConnection
-  const peerConnection = new RTCPeerConnection(peerConfiguration);
+  try {
+    const pc = new RTCPeerConnection(peerConfiguration);
 
-  // Initialize remote stream
-  const remoteStream = new MediaStream();
-  remoteVideo.srcObject = remoteStream;
+    // Initialize remote stream
+    const remoteStream = new MediaStream();
+    remoteVideo.srcObject = remoteStream;
 
-  // Add local stream tracks to the peer connection
-  localStream.getTracks().forEach(track => {
-    peerConnection.addTrack(track, localStream);
-  });
-
-  // Handle ICE candidates
-  peerConnection.onicecandidate = (event) => {
-    if (event.candidate) {
-      console.log("ICE candidate found!", event.candidate);
-      socket.emit('sendIceCandidateToSignalingServer', {
-        iceCandidate: event.candidate,
-        iceUserName: username,
-        didIOffer
+    // Check if localStream exists before adding tracks
+    if (localStream) {
+      localStream.getTracks().forEach(track => {
+        pc.addTrack(track, localStream);
       });
     }
-  };
 
-  // Handle incoming tracks from remote peer
-  peerConnection.ontrack = (event) => {
-    event.streams[0].getTracks().forEach(track => {
-      remoteStream.addTrack(track);
-    });
-    console.log("Received track from remote peer.");
-  };
+    // Handle ICE candidates
+    pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        console.log("ICE candidate found!", event.candidate);
+        socket.emit('sendIceCandidateToSignalingServer', {
+          iceCandidate: event.candidate,
+          iceUserName: username,
+          didIOffer
+        });
+      }
+    };
 
-  // Handle signaling state changes
-  peerConnection.onsignalingstatechange = () => {
-    console.log('Signaling state changed to:', peerConnection.signalingState);
-    if (peerConnection.signalingState === 'stable') {
-      console.log('The connection is stable.');
+    // Handle incoming tracks from remote peer
+    pc.ontrack = (event) => {
+      event.streams[0].getTracks().forEach(track => {
+        remoteStream.addTrack(track);
+      });
+      console.log("Received track from remote peer.");
+    };
+
+    // If an offer object is provided, set the remote description
+    if (offerObj) {
+      await pc.setRemoteDescription(offerObj.offer);
     }
-  };
 
-  if (offerObj) {
-    // Set the remote description if an offerObj is provided
-    await peerConnection.setRemoteDescription(offerObj.offer);
+    // Handle signaling state changes
+    pc.onsignalingstatechange = () => {
+      console.log(pc);
+      console.log('Signaling state changed to:', pc.signalingState);
+    };
+
+    console.log(pc);
+    return pc;
+
+  } catch (error) {
+    console.error("Error creating peer connection:", error);
   }
-
-  return peerConnection;
 };
 
+// Function to initiate the call
+const call = async (localVideo, remoteVideo, username) => {
+  try {
+    await fetchUserMedia(localVideo);
+    peerConnection = await createPeerConnection(remoteVideo, username, null);
+    if (peerConnection) {
+      console.log("Creating offer...");
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+      didIOffer = true;
+
+      // Send offer to the signaling server
+      socket.emit('newOffer', offer);
+    }
+  } catch (err) {
+    console.error("Error during call initiation:", err);
+  }
+};
+
+// Function to handle the video
+const handleVideo = async (localVideo, remoteVideo, username) => {
+  await call(localVideo, remoteVideo, username);
+};
+
+// Function to answer an offer
 export const answerOffer = async (localVideo, remoteVideo, username, offerObj) => {
-  await fetchUserMedia(localVideo);
-  peerConnection = await createPeerConnection(remoteVideo, username, offerObj)
-  console.log(peerConnection)
-  const answer = await peerConnection.createAnswer();
-  console.log(answer)
-  await peerConnection.setLocalDescription(answer);
-  console.log("offerObj:", offerObj);
-  console.log("answer:", answer);
-  console.log("peerConnection.signalingState:", peerConnection.signalingState);
-  offerObj.answer = answer;
-  const offerIceCandidates = await socket.emitWithAck('newAnswer', offerObj);
-  offerIceCandidates.forEach(c => {
-    peerConnection.addIceCandidate(c);
-    console.log("======Added Ice Candidate======");
-  });
-  console.log("offerIceCandidates:", offerIceCandidates);
+  try {
+    await fetchUserMedia(localVideo);
+    peerConnection = await createPeerConnection(remoteVideo, username, offerObj);
+
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+
+    offerObj.answer = answer;
+
+    const offerIceCandidates = await socket.emitWithAck('newAnswer', offerObj);
+    offerIceCandidates.forEach(c => {
+      peerConnection.addIceCandidate(c);
+      console.log("Added ICE candidate from offer.");
+    });
+
+  } catch (err) {
+    console.error("Error answering offer:", err);
+  }
 };
 
 export const addAnswer = async (offerObj) => {
-  // Add the answer to the peer connection
-    await peerConnection.setRemoteDescription(offerObj.answer)
-  console.log("Added answer to peer connection.");
+  try {
+    // Ensure peer connection is in the correct state to accept an answer
+    if (peerConnection.signalingState === 'have-local-offer') {
+      await peerConnection.setRemoteDescription(offerObj.answer);
+      console.log("Added answer to peer connection.");
+    } else {
+      console.warn("Cannot add answer, peer connection is not in the correct state. Current signaling state:", peerConnection.signalingState);
+    }
+  } catch (err) {
+    console.error("Error adding answer:", err);
+  }
 };
 
-export const addNewIceCandidate = (iceCandidate) => {
-  peerConnection.addIceCandidate(iceCandidate);
-  console.log("======Added Ice Candidate======");
+
+export const addNewIceCandidate = async (iceCandidate) => {
+  try {
+    // Ensure the connection is not closed and the description is set before adding ICE candidates
+    if (peerConnection.signalingState !== 'closed') {
+      await peerConnection.addIceCandidate(iceCandidate);
+      console.log("Added ICE candidate.");
+    } else {
+      console.warn("Cannot add ICE candidate, peer connection is closed.");
+    }
+  } catch (err) {
+    console.error("Error adding ICE candidate:", err);
+  }
 };
 
-export default handelVideo;
+
+export default handleVideo;

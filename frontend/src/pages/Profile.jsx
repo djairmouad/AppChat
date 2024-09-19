@@ -11,6 +11,7 @@ export default function Profile() {
     queryKey: ["fetchUser", id], // Include id as part of the queryKey
     queryFn: () => fetchUser(id),
   });
+
   const name = useRef();
   const email = useRef();
   const file = useRef();
@@ -18,6 +19,7 @@ export default function Profile() {
     mutationFn: UpdateProfile,
   });
 
+  
   const profile = data?.data[0] || "";
   function handleUpdate() {
     const profileImage = file.current.files[0];

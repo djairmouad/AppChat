@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { saveConversation } from "../utils/http";
-import { useNavigate, useParams } from "react-router-dom";
+import {  useNavigate, useParams } from "react-router-dom";
 
 export default function Inputs(){
     const { friend, id } = useParams();
@@ -52,7 +52,6 @@ export default function Inputs(){
       socket.emit(`call`,id,friend)
       navigate(`/video?id=${id}&friend=${friend}`);
       }
-
     
       if(isError || isPending){
         return <p>error</p>

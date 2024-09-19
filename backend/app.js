@@ -27,9 +27,18 @@ app.use("/api/login", login);
 app.use("/api/user", authJWT, user);
 
 const port = 5000;
-const offers = [];
-
+let offers = [];
+let friendReciver=null;
+let idSender=null
+let newOffer=null
+let users=[]
 io.on("connection", (socket) => {
+  socket.on("send-id",(id)=>{
+    users.push({
+      userName:id,
+      socketId:socket.id
+    })
+  })
   socket.on("Message", (receiverId, message, nameFile, FileUpload) => {
     if (nameFile !== "") {
       fs.writeFile(`public/upload/${nameFile}`, FileUpload, (err) => {
@@ -40,31 +49,35 @@ io.on("connection", (socket) => {
         }
       });
     } else {
+      // const senderId=users.find(e=>e.userName=receiverId)
+      // console.log(senderId.socketId)
       io.emit(receiverId, message);
     }
   });
 
   socket.on("call", (id, friend) => {
-    socket.on("newOffer", (newOffer) => {
-      offers.push({
-        offerUserName: id,
-        offer: newOffer,
-        offerIceCandidates: [],
-        answerUserName: friend,
-        answerIceCandidates: []
-      });
-      io.emit(`receiver-${friend}`, offers.slice(-1));
-    });
-
+    friendReciver=friend
+    idSender=id
     const show = true;
     io.emit(`call-${friend}`, show, id);
   });
-
+  socket.on("newOffer", (newOffer) => {
+    newOffer=newOffer
+    offers.push({
+      offerUserName: idSender,
+      offer: newOffer,
+      offerIceCandidates: [],
+      answerUserName: friendReciver,
+      answerIceCandidates: []
+    });
+  });
+  io.emit(`receiver-${friendReciver}`, offers.slice(-1));
   socket.on("newAnswer", (offerObj, ackFunction) => {
+    
     const offerToUpdate = offers.find(o => o.offerUserName === offerObj.offerUserName);
+
     ackFunction(offerToUpdate.offerIceCandidates);
     offerToUpdate.answer = offerObj.answer;
-    console.log(offerObj.answerUserName)
     io.emit(`answerResponse-${offerObj.answerUserName}`, offerToUpdate);
   });
 

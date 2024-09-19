@@ -23,6 +23,7 @@ export default function SideBare() {
             setShow(newShow);
             setCller(caller)
         });
+        socket.emit("send-id",id)
     }, [id]);
 
     const { data, isPending, isError } = useQuery({
