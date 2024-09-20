@@ -9,38 +9,44 @@ export default function VideoChat() {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id") || 1;
   const friend = searchParams.get("friend") || 1;
+  const caller= searchParams.get("caller") || 1;
 
   useEffect(() => {
     if (id !== 1 && friend !== 1) {
       if (localVideoRef.current && remoteVideoRef.current) {
         handelVideo(localVideoRef.current, remoteVideoRef.current, id);
-      }
-    } else {
-      const receiverListener =async()=>{
-        await socket.on(`receiver-${id}`, (offers) => {
+         socket.on(`receivedIceCandidateFromServer-${id}`, (iceCandidate) => {
           console.log("hello")
+          console.log("iceCandidateListener!!!!!!!!!!!!!!!!")
+          addNewIceCandidate(iceCandidate);
+        });
+      }
+    } else if(id !== 1 && friend === 1) {
+      const receiverListener =socket.on(`receiver-${id}`, (offers) => {
+          console.log("receiverListener ")
           offers.forEach((o) => {
             answerOffer(localVideoRef.current, remoteVideoRef.current, id, o);
           });
         });
-      }
-      receiverListener();
+      
       const answerListener = socket.on(`answerResponse-${id}`, (offerObj) => {
+        console.log("answerListener")
         addAnswer(offerObj);
       });
 
-      const iceCandidateListener = socket.on("receivedIceCandidateFromServer", (iceCandidate) => {
+      const iceCandidateListener = socket.on(`receivedIceCandidateFromServer-${id}`, (iceCandidate) => {
+        console.log("iceCandidateListener!!!!!!!!!!!!!!!!")
         addNewIceCandidate(iceCandidate);
       });
 
       return () => {
         // // Cleanup event listeners when component unmounts
-        // socket.off(`receiver-${id}`, receiverListener);
+        socket.off(`receiver-${id}`, receiverListener);
         socket.off(`answerResponse-${id}`, answerListener);
         socket.off("receivedIceCandidateFromServer", iceCandidateListener);
       };
     }
-  }, [id, friend]);
+  }, [id, friend,caller]);
 
   return (
     <div className="absolute flex flex-wrap w-full h-full">

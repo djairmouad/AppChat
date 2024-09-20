@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-const multer = require("multer");
 const fs = require('fs');
 const app = express();
 const { authJWT } = require("./Middleware/verifyAuth");
@@ -28,19 +27,16 @@ app.use("/api/user", authJWT, user);
 
 const port = 5000;
 let offers = [];
-let friendReciver=null;
-let idSender=null
-let newOffer=null
-let users=[]
+let friendReceiver = null;
+let idSender = null;
+
 io.on("connection", (socket) => {
-  socket.on("send-id",(id)=>{
-    users.push({
-      userName:id,
-      socketId:socket.id
-    })
-  })
+  socket.on("send-id", (id) => {
+    // Store user ID and socket ID for future reference
+  });
+
   socket.on("Message", (receiverId, message, nameFile, FileUpload) => {
-    if (nameFile !== "") {
+    if (nameFile) {
       fs.writeFile(`public/upload/${nameFile}`, FileUpload, (err) => {
         if (err) {
           console.log(err);
@@ -49,33 +45,31 @@ io.on("connection", (socket) => {
         }
       });
     } else {
-      // const senderId=users.find(e=>e.userName=receiverId)
-      // console.log(senderId.socketId)
       io.emit(receiverId, message);
     }
   });
 
   socket.on("call", (id, friend) => {
-    friendReciver=friend
-    idSender=id
+    friendReceiver = friend;
+    idSender = id;
     const show = true;
     io.emit(`call-${friend}`, show, id);
   });
-  socket.on("newOffer", (newOffer) => {
-    newOffer=newOffer
+
+  socket.on("newOffer", (offer) => {
     offers.push({
       offerUserName: idSender,
-      offer: newOffer,
+      offer: offer,
       offerIceCandidates: [],
-      answerUserName: friendReciver,
+      answerUserName: friendReceiver,
+      answer: null,
       answerIceCandidates: []
     });
+    io.emit(`receiver-${friendReceiver}`, offers.slice(-1));
   });
-  io.emit(`receiver-${friendReciver}`, offers.slice(-1));
-  socket.on("newAnswer", (offerObj, ackFunction) => {
-    
-    const offerToUpdate = offers.find(o => o.offerUserName === offerObj.offerUserName);
 
+  socket.on("newAnswer", (offerObj, ackFunction) => {
+    const offerToUpdate = offers.find(o => o.offerUserName === offerObj.offerUserName);
     ackFunction(offerToUpdate.offerIceCandidates);
     offerToUpdate.answer = offerObj.answer;
     io.emit(`answerResponse-${offerObj.answerUserName}`, offerToUpdate);
@@ -83,36 +77,17 @@ io.on("connection", (socket) => {
 
   socket.on("sendIceCandidateToSignalingServer", (iceCandidateObj) => {
     const { didIOffer, iceUserName, iceCandidate } = iceCandidateObj;
-    if (didIOffer) {
-      const offerInOffers = offers.find(o => o.offerUserName === iceUserName);
-      if (offerInOffers) {
-        offerInOffers.offerIceCandidates.push(iceCandidate);
-        if (offerInOffers.answerUserName) {
-          const socketToSendTo = offerInOffers.answerUserName;
-          if (socketToSendTo) {
-            io.emit(`receivedIceCandidateFromServer-${socketToSendTo}`, iceCandidate);
-
-          } else {
-            console.log("Ice candidate received but could not find answerer");
-          }
-        }
-      }
-    } else {
-      const offerInOffers = offers.find(o => o.answerUserName === iceUserName);
-      if (offerInOffers) {
-        const socketToSendTo = offerInOffers.offerUserName;
-        if (socketToSendTo) {
-          io.emit(`receivedIceCandidateFromServer-${socketToSendTo}`, iceCandidate);
-
-        } else {
-          console.log("Ice candidate received but could not find offerer");
-        }
+    const offerInOffers = offers.find(o => (didIOffer ? o.offerUserName : o.answerUserName) === iceUserName);
+    if (offerInOffers) {
+      const socketToSendTo = didIOffer ? offerInOffers.answerUserName : offerInOffers.offerUserName;
+      if (socketToSendTo) {
+        io.emit(`receivedIceCandidateFromServer-${socketToSendTo}`, iceCandidate);
       }
     }
   });
 });
 
-db.initDb((err, dataBase) => {
+db.initDb((err) => {
   if (err) {
     console.log(err);
   } else {

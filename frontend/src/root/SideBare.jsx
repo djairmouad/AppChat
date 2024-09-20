@@ -24,6 +24,9 @@ export default function SideBare() {
             setCller(caller)
         });
         socket.emit("send-id",id)
+        return () => {
+            socket.off("hey"); // Corrected to remove the "hey" listener
+          };
     }, [id]);
 
     const { data, isPending, isError } = useQuery({
@@ -38,7 +41,8 @@ export default function SideBare() {
     function onClose() {
         dispatch(callAction.removeCall());
     }
-    function handelCall(){
+    function handelCall(caller){
+        socket.emit("TellResiver","message")
         navigate(`/video?id=${id}&caller=${caller}`);
     }
     return (
@@ -48,7 +52,7 @@ export default function SideBare() {
                 {show && (
                     <Modal open={show} onClose={onClose}>
                         <div className="flex gap-3 w-56 bg-transparent">
-                            <button className="py-1 px-3 font-medium outline-none rounded-lg border w-1/2 bg-green-500 text-white" onClick={handelCall}>Call</button>
+                            <button className="py-1 px-3 font-medium outline-none rounded-lg border w-1/2 bg-green-500 text-white" onClick={()=>handelCall(caller)}>Call</button>
                             <button className="py-1 px-3 font-medium outline-none rounded-lg border w-1/2 bg-red-600 text-white">Remove</button>
                         </div>
                     </Modal>
