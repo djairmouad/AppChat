@@ -27,12 +27,11 @@ app.use("/api/user", authJWT, user);
 
 const port = 5000;
 let offers = [];
-let friendReceiver = null;
-let idSender = null;
+let users = [];
 
 io.on("connection", (socket) => {
   socket.on("send-id", (id) => {
-    // Store user ID and socket ID for future reference
+    users.push({ userName: id, socketId: socket.id });
   });
 
   socket.on("Message", (receiverId, message, nameFile, FileUpload) => {
@@ -49,23 +48,10 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("call", (id, friend) => {
-    friendReceiver = friend;
-    idSender = id;
-    const show = true;
-    io.emit(`call-${friend}`, show, id);
-  });
-
-  socket.on("newOffer", (offer) => {
-    offers.push({
-      offerUserName: idSender,
-      offer: offer,
-      offerIceCandidates: [],
-      answerUserName: friendReceiver,
-      answer: null,
-      answerIceCandidates: []
-    });
-    io.emit(`receiver-${friendReceiver}`, offers.slice(-1));
+  socket.on("signalFirst", (data) => {
+    const { type, sdp:offer, sdp:answer, id } = data;
+    console.log(answer)
+    io.emit(`signal-${id}`, { type, offer: type === 'offer' ? offer : answer });
   });
 
   socket.on("newAnswer", (offerObj, ackFunction) => {
@@ -75,19 +61,14 @@ io.on("connection", (socket) => {
     io.emit(`answerResponse-${offerObj.answerUserName}`, offerToUpdate);
   });
 
-  socket.on("sendIceCandidateToSignalingServer", (iceCandidateObj) => {
-    const { didIOffer, iceUserName, iceCandidate } = iceCandidateObj;
-    const offerInOffers = offers.find(o => (didIOffer ? o.offerUserName : o.answerUserName) === iceUserName);
-    if (offerInOffers) {
-      const socketToSendTo = didIOffer ? offerInOffers.answerUserName : offerInOffers.offerUserName;
-      if (socketToSendTo) {
-        io.emit(`receivedIceCandidateFromServer-${socketToSendTo}`, iceCandidate);
-      }
-    }
+  // Handle ICE candidate signaling
+  socket.on('ice-candidate', (data) => {
+    const { candidate, id } = data;
+    io.to(id).emit('ice-candidate', { candidate, id: socket.id });
   });
 });
 
-db.initDb((err) => {
+db.initDb((err, dataBase) => {
   if (err) {
     console.log(err);
   } else {
