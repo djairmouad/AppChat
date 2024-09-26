@@ -13,6 +13,7 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
+    methods: ['GET', 'POST'],
   },
   maxHttpBufferSize: 1e8 // 100 MB
 });
@@ -28,12 +29,64 @@ app.use("/api/user", authJWT, user);
 const port = 5000;
 let offers = [];
 let users = [];
+let friendReceiver = null;
+let idSender = null;
 
 io.on("connection", (socket) => {
   socket.on("send-id", (id) => {
     users.push({ userName: id, socketId: socket.id });
   });
-
+  socket.on('disconnect',id=>{
+    const indexDeleted=users.findIndex((item)=>item.userName===id)
+    users.splice(indexDeleted, 1);
+  });
+  socket.on('offer', (offer,id,friend) => {
+    offers.push({
+      offerUserName: idSender,
+      offer: offer,
+      offerIceCandidates: [],
+      answerUserName: friendReceiver,
+      answer: null,
+      answerIceCandidates: []
+    });
+   let newOffer=offers.find((item)=>{
+    return (item.offerUserName===id && item.answerUserName===friend)||
+    item.offerUserName===friend && item.answerUserName===id
+   });
+   newOffer.offer=offer
+    socket.broadcast.emit('offer',newOffer.offer);
+  });
+  socket.on('answer', (answer,id,friend) => {
+    const newOffer=offers.findIndex((item)=>{
+      return (item.offerUserName===id && item.answerUserName===friend)||
+      item.offerUserName===friend && item.answerUserName===id
+     });
+    offers[newOffer].answer=answer
+     const newAnswer=offers[newOffer];
+    socket.broadcast.emit('answer', newAnswer.answer);
+  });
+  socket.on('candidate', (candidate, id, friend) => {
+    const newCandiateOffer = offers.findIndex((item) => {
+      return (item.offerUserName === id && item.answerUserName === friend);
+    });
+  
+    const newCandiateAnswr = offers.findIndex((item) => {
+      return (item.offerUserName === friend && item.answerUserName === id);
+    });
+  
+    if (newCandiateOffer !== -1) { // Check if the offer index is valid
+      offers[newCandiateOffer].offerIceCandidates.push(candidate);
+      console.log(offers[newCandiateOffer].offerIceCandidates);
+      socket.broadcast.emit('candidate', offers[newCandiateOffer].offerIceCandidates);
+    }
+  
+    if (newCandiateAnswr !== -1) { // Check if the answer index is valid
+      offers[newCandiateAnswr].answerIceCandidates.push(candidate);
+      console.log(offers[newCandiateAnswr].answerIceCandidates);
+      socket.broadcast.emit('candidate', offers[newCandiateAnswr].answerIceCandidates);
+    }
+  });
+  
   socket.on("Message", (receiverId, message, nameFile, FileUpload) => {
     if (nameFile) {
       fs.writeFile(`public/upload/${nameFile}`, FileUpload, (err) => {
@@ -47,25 +100,22 @@ io.on("connection", (socket) => {
       io.emit(receiverId, message);
     }
   });
+  io.on("TellResiver",(message)=>{
+    console.log(message);
+  })
+  socket.on(`call`,(id,friend)=>{
+    idSender=id;
+    friendReceiver=friend
+    io.emit(`call-${friend}`, true,id)
+  })
+ // Handle receiving ICE candidates and forwarding them to the correct peer
+socket.on('ice-candidate', (data) => {
+  const { candidate, id } = data;
 
-  socket.on("signalFirst", (data) => {
-    const { type, sdp:offer, sdp:answer, id } = data;
-    console.log(answer)
-    io.emit(`signal-${id}`, { type, offer: type === 'offer' ? offer : answer });
-  });
+  // Send the candidate only to the intended peer
+  socket.to(id).emit(`ice-candidate-${id}`, { candidate });
+});
 
-  socket.on("newAnswer", (offerObj, ackFunction) => {
-    const offerToUpdate = offers.find(o => o.offerUserName === offerObj.offerUserName);
-    ackFunction(offerToUpdate.offerIceCandidates);
-    offerToUpdate.answer = offerObj.answer;
-    io.emit(`answerResponse-${offerObj.answerUserName}`, offerToUpdate);
-  });
-
-  // Handle ICE candidate signaling
-  socket.on('ice-candidate', (data) => {
-    const { candidate, id } = data;
-    io.to(id).emit('ice-candidate', { candidate, id: socket.id });
-  });
 });
 
 db.initDb((err, dataBase) => {

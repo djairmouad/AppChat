@@ -42,8 +42,10 @@ export default function SideBare() {
         dispatch(callAction.removeCall());
     }
     function handelCall(caller){
+        
+    socket.emit("send-id", id);  // Send the ID to the server
         socket.emit("TellResiver","message")
-        navigate(`/video?id=${id}&caller=${caller}`);
+        navigate(`/video?id=${id}&friend=${caller}`);
     }
     return (
         <div className="flex absolute bg-red-600 w-full h-full">

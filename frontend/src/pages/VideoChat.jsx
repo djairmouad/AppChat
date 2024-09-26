@@ -7,154 +7,112 @@ export default function VideoChat() {
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
   const [searchParams] = useSearchParams();
-  const id = searchParams.get("id") || 1;
-  const friend = searchParams.get("friend") || 1;
+  const id = searchParams.get("id");
+  const friend = searchParams.get("friend");
 
-  const configuration = {
+  const localVideoRef = useRef(null);
+  const remoteVideoRef = useRef(null);
+  const peerConnectionRef = useRef(null);
+
+  const servers = {
     iceServers: [
       { urls: 'stun:stun.l.google.com:19302' },
       { urls: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'webrtc@live.com' }
     ]
   };
 
-  const peerConnectionRef = useRef(new RTCPeerConnection(configuration));
-  const remoteMediaStream = useRef(new MediaStream());
-
   useEffect(() => {
-    const peerConnection = peerConnectionRef.current;
-
-    // Handle remote track
-    peerConnection.ontrack = (event) => {
-      event.streams[0].getTracks().forEach(track => {
-        remoteMediaStream.current.addTrack(track);
-      });
-      setRemoteStream(remoteMediaStream.current);
-    };
-
-    // Handle ICE candidate
-    peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        socket.emit('ice-candidate', {
-          candidate: event.candidate,
-          id: friend
-        });
-        
-      }
-    };
-
-    // Start video chat
     const startVideoChat = async () => {
       try {
+        // Get local media stream (video/audio)
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         setLocalStream(stream);
-        stream.getTracks().forEach(track => {
-          peerConnection.addTrack(track, stream);
-        });
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = stream;
+        }
 
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-        socket.emit("signalFirst", { type: "offer", sdp: offer, id: friend });
-        console.log("Emitting offer:", { type: "offer", sdp: offer, id: friend });
-      } catch (error) {
-        console.error('Error accessing media devices:', error);
-        alert('Could not access your camera and microphone. Please check your permissions.');
-      }
-    };
+        // Create a new RTCPeerConnection
+        const peerConnection = new RTCPeerConnection(servers);
+        peerConnectionRef.current = peerConnection;  // Save the peerConnection to a ref
 
-    if (id !== 1 && friend !== 1) {
-      startVideoChat();
-    }
+        // Add tracks from local stream to peer connection
+        stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
 
-    // Cleanup
-    return () => {
-      peerConnection.close();
-      localStream?.getTracks().forEach(track => track.stop());
-    };
-  }, [id, friend]);
+        // Set up the handler for receiving remote tracks
+        peerConnection.ontrack = (event) => {
+          const remoteStream = event.streams[0];
+          setRemoteStream(remoteStream);
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = remoteStream;
+          }
+        };
 
-  useEffect(() => {
-    const peerConnection = peerConnectionRef.current;
+        // Set up the handler for ICE candidates
+        peerConnection.onicecandidate = (event) => {
+          if (event.candidate) {
+            socket.emit('candidate', event.candidate,id,friend);
+          }
+        };
 
-    // Handle incoming offer
-    const handleReceiveOffer = async (offer) => {
-      try {
-        if (offer && offer.type === 'offer') {
-          console.log("hello")
+        // Handle receiving an offer
+        socket.on('offer', async (offer) => {
           await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
           const answer = await peerConnection.createAnswer();
           await peerConnection.setLocalDescription(answer);
-          socket.emit('signalFirst', { type: 'answer', sdp: answer, id });
-          console.log("Emitting answer:", { type: 'answer', sdp: answer, id });
+          socket.emit('answer', answer,id,friend);
+        });
 
-        } else {
-          console.error("Received invalid offer:", offer);
-        }
-      } catch (error) {
-        console.error("Error handling offer:", error);
-      }
-    };
+        // Handle receiving an answer
+        socket.on('answer', async (answer) => {
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        });
 
-// Handle incoming answer
-const handleReceiveAnswer = async (answer) => {
-  try {
-    if (answer && answer.type === 'answer') {
-      if (peerConnection.signalingState === 'have-local-offer') { // Ensure we are in the correct state
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-        console.log("Remote answer set successfully.");
+   // Handle receiving ICE candidates
+socket.on('candidate', async (candidateDataArray) => {
+  for (const candidateData of candidateDataArray) {
+      console.log('Received ICE candidate:', candidateData);
+      if (candidateData && candidateData.candidate && candidateData.sdpMid !== null && candidateData.sdpMLineIndex !== null) {
+          try {
+              const iceCandidate = new RTCIceCandidate(candidateData);
+              await peerConnection.addIceCandidate(iceCandidate);
+          } catch (error) {
+              console.error('Error adding ICE candidate:', error);
+          }
       } else {
-        console.error(`Unexpected state: ${peerConnection.signalingState}. Cannot set remote answer.`);
+          console.error('Received invalid ICE candidate:', candidateData);
       }
-    } else {
-      console.error("Received invalid answer:", answer);
-    }
-  } catch (error) {
-    console.error("Error handling answer:", error);
   }
-};
+});
 
 
+       
+        // Create an offer, set local description, and send it to the other peer
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        socket.emit('offer', offer,id,friend);
 
-    // Handle incoming ICE candidate
-    const handleNewICECandidateMsg = (candidate) => {
-      try {
-        if (candidate) {
-          peerConnection.addIceCandidate(new RTCIceCandidate(candidate)).catch(e => {
-            console.error("Error adding received ice candidate:", e);
-          });
-        } else {
-          console.error("Received invalid ICE candidate:", candidate);
-        }
       } catch (error) {
-        console.error("Error handling ICE candidate:", error);
+        console.error("Error starting video chat:", error);
       }
     };
 
-    // Listen for signaling messages
-    socket.on(`signal-${id}`, data => {
-      console.log("Signal data received:", data);
-      switch (data.type) {
-        case 'offer':
-          console.log(data)
-          handleReceiveOffer(data.offer);
-          break;
-        case 'answer':
-          console.log(data)
-          handleReceiveAnswer(data.offer);
-          break;
-        case 'ice-candidate':
-          handleNewICECandidateMsg(data.candidate);
-          break;
-        default:
-          console.warn("Unknown signal type received:", data.type);
-          break;
-      }
-    });
+    // Condition to continue execution only if the URL parameters match the specific IDs
+    if (
+      (id === id && friend === friend) ||
+      (id === friend && friend === id)
+    ) {
+      startVideoChat();
+    }
 
-    // Cleanup
+    // Cleanup when the component is unmounted
     return () => {
-      socket.off(`signal-${id}`);
+      const peerConnection = peerConnectionRef.current;
+      if (peerConnection) {
+        peerConnection.close();
+      }
+      localStream?.getTracks().forEach(track => track.stop());
     };
-  }, [id]);
+  }, [id, friend]);
 
   return (
     <VideoPlayer localStream={localStream} remoteStream={remoteStream} />
