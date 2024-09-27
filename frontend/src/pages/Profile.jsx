@@ -1,9 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import image from "../assets/profile.jpg";
 import { fetchUser, queryClient, UpdateProfile } from "../utils/http";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useParams } from "react-router-dom";
-import socket from "../utils/socket";
 
 export default function Profile() {
   const { id } = useParams(); // Move this above the useQuery
@@ -38,7 +37,10 @@ export default function Profile() {
       }
     });
   }
-  
+  if(isError){
+    console.log("helo")
+    return <p>error</p>
+  }
   return (
     <ul className="w-1/2 flex flex-col gap-5 pl-5">
       <li className="relative">

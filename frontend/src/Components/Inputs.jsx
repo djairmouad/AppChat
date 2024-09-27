@@ -1,4 +1,4 @@
-import { faPaperclip, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { faPaperclip, faPaperPlane, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { conversationAction } from "../../store/conversation";
 import socket from "../utils/socket";
@@ -56,7 +56,7 @@ export default function Inputs(){
       if(isError || isPending){
         return <p>error</p>
       }
-    return   <ul className="flex items-center h-10% w-full pl-3">
+    return   <ul className="flex items-center h-10% w-full  pl-3 ">
     <input
       ref={message}
       type="text"
@@ -76,11 +76,11 @@ export default function Inputs(){
         className="cursor-pointer absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
       />
     </div>
-    <button onClick={handleSend} className="w-10% h-10% flex items-center">
+    <button onClick={handleSend} className="w-10% h-10% flex items-center justify-center">
       <FontAwesomeIcon icon={faPaperPlane} />
     </button>
-    <button onClick={()=>handleCall(friend)} className="w-10% h-10% flex items-center">
-      Call
+    <button onClick={()=>handleCall(friend)} className="w-10% h-10%  flex items-center justify-center">
+    <FontAwesomeIcon className=" text-green-600 " icon={faPhone} />
     </button>
   </ul>
 }

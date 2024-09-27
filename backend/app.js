@@ -100,22 +100,11 @@ io.on("connection", (socket) => {
       io.emit(receiverId, message);
     }
   });
-  io.on("TellResiver",(message)=>{
-    console.log(message);
-  })
   socket.on(`call`,(id,friend)=>{
     idSender=id;
     friendReceiver=friend
     io.emit(`call-${friend}`, true,id)
   })
- // Handle receiving ICE candidates and forwarding them to the correct peer
-socket.on('ice-candidate', (data) => {
-  const { candidate, id } = data;
-
-  // Send the candidate only to the intended peer
-  socket.to(id).emit(`ice-candidate-${id}`, { candidate });
-});
-
 });
 
 db.initDb((err, dataBase) => {

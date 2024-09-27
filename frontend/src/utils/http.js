@@ -15,17 +15,22 @@ export async function login(eventData) {
 }
 
 export async function SearchUsers() {
-    const token=getToken();
-    const response=await fetch("http://localhost:5000/api/user/search",{
-        method:"GET",
-        headers:{
-            "Content-Type":"application/json",
-            "Authorization":"Bearer "+token
-        }
-    })
-    const data=await response.json();
-    console.log(data);
-    return data.data
+    try{
+        const token=getToken();
+        const response=await fetch("http://localhost:5000/api/user/search",{
+            method:"GET",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer "+token
+            }
+        })
+        const data=await response.json();
+        console.log(data);
+        return data.data
+    }catch(err){
+    console.log(err)
+    }
+    
 }
 
 export async function CreateUser(eventData) {
@@ -43,32 +48,40 @@ return data
 }
 
 export async function fetchUser(id) {
- const token=getToken();
- const response=await fetch("http://localhost:5000/api/user/"+id,{
-    method:"GET",
-    headers:{
-        "Content-Type":"application/json",
-        "Authorization":"Bearer "+token
+    try{
+        const token=getToken();
+        const response=await fetch("http://localhost:5000/api/user/"+id,{
+           method:"GET",
+           headers:{
+               "Content-Type":"application/json",
+               "Authorization":"Bearer "+token
+           }
+        })
+        const data=await response.json();
+        return data
+    }catch(err){
+        console.log(err)
     }
- })
- const data=await response.json();
- return data
 }
 
 export async function addFriend({id,id_Friend}) {
-    console.log(id_Friend);
-    const token=getToken();
-    const response=await fetch("http://localhost:5000/api/user/"+id,{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json",
-            "Authorization":"Bearer "+token
-        },
-        body:JSON.stringify({id_Friend:id_Friend})
-    })
-    const data=response.json();
-    console.log(data);
-    return data
+    try {
+        const token=getToken();
+        const response=await fetch("http://localhost:5000/api/user/"+id,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer "+token
+            },
+            body:JSON.stringify({id_Friend:id_Friend})
+        })
+        const data=response.json();
+        console.log(data);
+        return data
+    } catch (error) {
+        console.log(error)
+    }
+   
 }
 
 export async function saveConversation({ info, id, friend, FileUpload }) {
