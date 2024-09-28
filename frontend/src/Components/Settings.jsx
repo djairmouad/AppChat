@@ -1,4 +1,4 @@
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faRightFromBracket, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { RemoveToken } from "../utils/getAuth";
@@ -6,23 +6,30 @@ import { RemoveToken } from "../utils/getAuth";
 export default function Settings({data}){
     const {id}=useParams()
     const name=data?.data[0].name || ""
+     const profileImage=data?.data[0].profileImage 
+
     const navigate=useNavigate()
     function HandelLogOut(){
     RemoveToken()
     navigate("/");
     }
     return   <div className="info h-10% font-medium ">
-    <ul className="flex justify-around  ">
+    <ul className="flex justify-around items-center  ">
         <li className="flex items-center gap-1 w-1/3 ">
         <NavLink to={id} className="flex items-center gap-1 w-full">
-        <FontAwesomeIcon icon={faUser} />
+        {profileImage?
+            <li className="relative overflow-hidden rounded-full w-9 h-9    border-1 border-white ">
+              <img className="" src={"http://localhost:5000/upload/"+profileImage}></img>
+            </li>:
+        <FontAwesomeIcon icon={faUser} />}
         <p>{name}</p>
         </NavLink>
         </li>
         
         <li className="w-1/3 ">
-           <button onClick={HandelLogOut}>
+           <button onClick={HandelLogOut} className=" flex gap-2 items-center ">
            LogOut
+           <FontAwesomeIcon icon={faRightFromBracket} />
            </button>
         </li>
     </ul>

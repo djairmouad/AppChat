@@ -42,7 +42,9 @@ export default function SideBare() {
     }
 
     function onClose() {
-        dispatch(callAction.removeCall());
+        setShow(false)
+        socket.emit("Close",caller)
+        // dispatch(callAction.removeCall());
     }
     function handelCall(caller){
         
@@ -67,7 +69,7 @@ export default function SideBare() {
                             <button className="py-1 px-3 font-medium outline-none rounded-lg border w-1/2 bg-green-500 text-white" onClick={()=>handelCall(caller)}>
                             <FontAwesomeIcon icon={faPhoneVolume} />
                             </button>
-                            <button className="py-1 px-3 font-medium outline-none rounded-lg border w-1/2 bg-red-600 text-white">
+                            <button className="py-1 px-3 font-medium outline-none rounded-lg border w-1/2 bg-red-600 text-white" onClick={onClose}>
                             <FontAwesomeIcon icon={faPhoneSlash} />
                             </button>
                         </div>

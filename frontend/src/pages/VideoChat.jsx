@@ -1,15 +1,18 @@
 import { useEffect, useState, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import socket from "../utils/socket";
 import VideoPlayer from "../Components/VideoChat/VideoPlayer";
+import { faVideoSlash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function VideoChat() {
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
+  const [close,setClose]=useState(false);
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const friend = searchParams.get("friend");
-
+  const navigate=useNavigate();
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
@@ -113,8 +116,56 @@ socket.on('candidate', async (candidateDataArray) => {
       localStream?.getTracks().forEach(track => track.stop());
     };
   }, [id, friend]);
-
+  useEffect(()=>{
+    socket.on(`Close-${id}`,()=>{
+      
+      if(localStream){
+        setClose(prev=>!prev)
+        localStream.getTracks().forEach(track => track.stop());
+      }
+      
+    })
+  },[id,localStream])
+ function handelClose(){
+    //      // Stop local tracks (video/audio)
+    if(localStream){
+      localStream.getTracks().forEach(track => track.stop());
+    }
+    navigate("/user/"+id+"/"+friend)
+  }
+  function ControleMicroPhone(config) {
+    const senders = peerConnectionRef.current.getSenders();
+  
+    // Iterate over each sender and mute the audio track
+    senders.forEach(sender => {
+      if (sender.track && sender.track.kind === 'audio') {
+        sender.track.enabled = config;  // Disables the audio track (mute)
+      }
+    });
+  }
+  function ControleCmira(config) {
+    const senders = peerConnectionRef.current.getSenders();
+    
+    // Iterate over each sender and disable the video track
+    senders.forEach(sender => {
+      if (sender.track && sender.track.kind === "video") {
+        sender.track.enabled = config;  // Disables the video track
+      }
+    });
+  }
+  
+  
   return (
-    <VideoPlayer localStream={localStream} remoteStream={remoteStream} />
+    <div className="flex  absolute h-full w-full justify-center items-center">
+    {close?<div className=" flex flex-col items-center">
+      <button onClick={handelClose}>
+      <p className="font-medium ">Close</p>
+      <FontAwesomeIcon className=" text-red-600 text-5xl" icon={faVideoSlash} />
+      </button>
+    </div>:
+      <VideoPlayer localStream={localStream} remoteStream={remoteStream} friend={friend} handelClose={handelClose} ControleCmira={ControleCmira} ControleMicroPhone={ControleMicroPhone} />
+      }
+    </div>
+
   );
 }

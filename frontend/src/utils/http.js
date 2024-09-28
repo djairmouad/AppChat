@@ -34,12 +34,10 @@ export async function SearchUsers() {
 }
 
 export async function CreateUser(eventData) {
-const token=getToken();
- const response=await fetch("http://localhost:5000/api/user/create",{
+ const response=await fetch("http://localhost:5000/api/NewCompte/create",{
     method:"POST",
     headers:{
         "Content-Type":"application/json",
-        "Authorization":"Bearer "+token
     },
     body:JSON.stringify(eventData)
 });

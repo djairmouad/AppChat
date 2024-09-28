@@ -43,9 +43,9 @@ export default function Profile() {
   }
   return (
     <ul className="w-1/2 flex flex-col gap-5 pl-5">
-      <li className="relative">
-        {profile.profileImage==="" || profile.profileImage===undefined?<img src={image} className="w-32 rounded-full" alt="Profile" />:
-            <img src={"http://localhost:5000/upload/"+profile.profileImage} className="w-32 rounded-full border-4 border-white  " alt="Profile" />
+      <li className="relative overflow-hidden rounded-full w-32 h-32 border-4 border-white ">
+        {profile.profileImage==="" || profile.profileImage===undefined?<img src={image} className="" alt="Profile" />:
+            <img src={"http://localhost:5000/upload/"+profile.profileImage} className="  " alt="Profile" />
         }
         <input ref={file} type="file" 
         className=" absolute w-32 h-32  rounded-full top-0 opacity-0 "
@@ -56,7 +56,7 @@ export default function Profile() {
         <input
           ref={name}
           type="text"
-          className=" w-3/4  rounded font-normal outline-none pl-1"
+          className=" w-3/5    rounded font-normal outline-none pl-1"
           defaultValue={profile.name}
         />
       </li>
@@ -65,11 +65,11 @@ export default function Profile() {
         <input
           ref={email}
           type="text"
-          className=" w-3/4  rounded font-normal outline-none pl-1"
+          className=" w-3/5    rounded font-normal outline-none pl-1"
           defaultValue={profile.email}
         />
       </li>
-      <li className=" w-3/4  flex justify-start ">
+      <li className=" w-3/5    flex justify-start ">
       <button onClick={handleUpdate} className=" w-fit px-3 py-1 rounded-lg font-semibold  bg-white">Update</button>
       </li>
     </ul>

@@ -8,7 +8,7 @@ const { authJWT } = require("./Middleware/verifyAuth");
 const db = require("./db/db");
 const login = require("./config/authToken");
 const user = require("./Router/user.js");
-
+const  create=require("./Router/creatUser.js");
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
@@ -25,6 +25,7 @@ app.use(cors());
 
 app.use("/api/login", login);
 app.use("/api/user", authJWT, user);
+app.use("/api/NewCompte", create);
 
 const port = 5000;
 let offers = [];
@@ -104,6 +105,9 @@ io.on("connection", (socket) => {
     idSender=id;
     friendReceiver=friend
     io.emit(`call-${friend}`, true,id)
+  })
+  socket.on("Close",(caller)=>{
+    io.emit(`Close-${caller}`,"Close")
   })
 });
 

@@ -12,11 +12,14 @@ export default function Friends({data}){
     </li>
     {Friends.map(item=>{
         return  <NavLink key={item._id} to={`${id}/${item._id}`} className={({ isActive }) => (isActive ? "bg-blue-200" : "bg-blue-300 ")}>
-        <ul className="flex border border-white border-r-0 py-1">
-        {console.log(item)}
-        {item.profileImage==="" || item.profileImage===undefined?<img src={image} className="w-12 h-12     rounded-full" alt="item" />:
-            <img src={"http://localhost:5000/upload/"+item.profileImage} className="w-12 h-12  rounded-full border-4 border-white  " alt="item" />
+        <ul className="flex items-center border border-white border-r-0 py-1">
+        <>
+        <li className="relative overflow-hidden rounded-full w-12 h-12 border-1 border-white ">
+        {item.profileImage==="" || item.profileImage===undefined?<img src={image} className="" alt="item" />:
+            <img src={"http://localhost:5000/upload/"+item.profileImage} alt="item" />
         }
+        </li>
+        </>
         <li className=" border border-white border-none py-2 pl-1 text-ms font-medium">
         {item.name}
     </li>

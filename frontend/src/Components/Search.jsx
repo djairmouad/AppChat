@@ -19,7 +19,7 @@ export default function Search({include}){
         users=[]
     }else{
         users=data?.filter((item)=>{
-            return item.name.includes(include.trim())
+            return item.name.toLowerCase().startsWith(include.trim().toLowerCase())
         });
         users=users.filter(item=>{
             return item._id!==id
@@ -34,7 +34,7 @@ export default function Search({include}){
         queryKey:"fetchUser"
     }])
     }
-    return <ul className=" h-fit bg-white">
+    return <ul className=" h-fit bg-white relative z-30">
     {users?.map((item)=>
     (
         <li key={item._id} className="flex items-center h-7 justify-between px-4 ">
