@@ -87,7 +87,9 @@ io.on("connection", (socket) => {
       socket.broadcast.emit('candidate', offers[newCandiateAnswr].answerIceCandidates);
     }
   });
-  
+  socket.on("ControleCamira",(friend,config)=>{
+    io.emit(`ControleCamira-${friend}`,config)
+  })
   socket.on("Message", (receiverId, message, nameFile, FileUpload) => {
     if (nameFile) {
       fs.writeFile(`public/upload/${nameFile}`, FileUpload, (err) => {

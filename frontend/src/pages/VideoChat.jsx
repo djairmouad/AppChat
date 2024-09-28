@@ -152,6 +152,7 @@ socket.on('candidate', async (candidateDataArray) => {
         sender.track.enabled = config;  // Disables the video track
       }
     });
+    socket.emit("ControleCamira",friend,config)
   }
   
   
@@ -163,7 +164,7 @@ socket.on('candidate', async (candidateDataArray) => {
       <FontAwesomeIcon className=" text-red-600 text-5xl" icon={faVideoSlash} />
       </button>
     </div>:
-      <VideoPlayer localStream={localStream} remoteStream={remoteStream} friend={friend} handelClose={handelClose} ControleCmira={ControleCmira} ControleMicroPhone={ControleMicroPhone} />
+      <VideoPlayer localStream={localStream} remoteStream={remoteStream} friend={friend} id={id} handelClose={handelClose} ControleCmira={ControleCmira} ControleMicroPhone={ControleMicroPhone} />
       }
     </div>
 

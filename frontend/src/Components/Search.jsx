@@ -39,7 +39,7 @@ export default function Search({include}){
     (
         <li key={item._id} className="flex items-center h-7 justify-between px-4 ">
         <p>{item.name}</p>
-        <button onClick={()=>HandelAddFriend(item._id)}>
+        <button className=" w-1/12 bg-blue-300 text-sm   rounded-lg " onClick={()=>HandelAddFriend(item._id)}>
         <FontAwesomeIcon icon={faLocationArrow} className=" w-3 text-blue-500" />
         </button>
     </li>

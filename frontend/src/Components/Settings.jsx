@@ -2,9 +2,15 @@ import { faRightFromBracket, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { RemoveToken } from "../utils/getAuth";
+import { fetchUser } from "../utils/http";
+import { useQuery } from "@tanstack/react-query";
 
-export default function Settings({data}){
+export default function Settings(){
     const {id}=useParams()
+    const { data, isPending, isError } = useQuery({
+        queryKey: ["fetchUser", id],
+        queryFn: () => fetchUser(id),
+    });
     const name=data?.data[0].name || ""
      const profileImage=data?.data[0].profileImage 
 

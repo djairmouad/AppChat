@@ -2,9 +2,9 @@
 import Friends from "./Friends";
 import Settings from "./Settings";
 
-export default function Side({data}){
+export default function Side(){
     return <>
-     <Friends data={data}/>
-      <Settings data={data}/>
+     <Friends />
+      <Settings />
     </>
 }

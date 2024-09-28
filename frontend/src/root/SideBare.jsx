@@ -57,7 +57,7 @@ export default function SideBare() {
     return (
         <div className="flex absolute bg-red-600 w-full h-full">
             <main className="w-1/4 h-full bg-white">
-                <Side data={data} />
+                <Side  />
                 {show && (
                     <Modal open={show} onClose={onClose}>
                         <div className=" flex flex-col gap-3 ">
@@ -82,7 +82,7 @@ export default function SideBare() {
                     <input
                         type="text"
                         ref={search}
-                        className="w-full border h-3/4 outline-none"
+                        className="w-full border h-3/4 outline-none pl-6"
                         placeholder=" Search About Friends"
                         onChange={handleChange}
                     />

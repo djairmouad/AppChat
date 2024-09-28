@@ -32,13 +32,12 @@ export default function Profile() {
         console.error("Mutation error:", error);
       },
       onSuccess:()=>{
-       console.log(profile);
        queryClient.invalidateQueries({queryKey:["fetchUser",id]});
       }
     });
   }
   if(isError){
-    console.log("helo")
+    
     return <p>error</p>
   }
   return (

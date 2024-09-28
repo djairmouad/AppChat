@@ -2,9 +2,16 @@ import { faComments } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink, useParams } from "react-router-dom";
 import image from "../assets/profile.jpg";
-export default function Friends({data}){
-    const Friends=data?.data[0].FriendUser || []
+import { useQuery } from "@tanstack/react-query";
+import { fetchUser } from "../utils/http";
+export default function Friends(){
     const {id}=useParams();
+    const { data, isPending, isError } = useQuery({
+        queryKey: ["fetchUser", id],
+        queryFn: () => fetchUser(id),
+    });
+    const Friends=data?.data[0].FriendUser || []
+    
     return    <ul className=" flex flex-col h-90%     pt-2  sm: pt-0 ">
     <li className=" pl-2 pb-2 flex gap-2  ">
     <FontAwesomeIcon  className="w-7 h-6 text-blue-700 sm: w-5" icon={faComments} />
