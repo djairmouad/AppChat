@@ -1,0 +1,191 @@
+[{
+  "_id": {
+    "$oid": "66f74a8a42113d71e1ed6f07"
+  },
+  "participants": [
+    {
+      "$oid": "66d2b9749d406c809160a727"
+    },
+    {
+      "$oid": "66d01bde17f6bbc5b7228fb5"
+    }
+  ],
+  "messages": [
+    {
+      "senderId": "66d01bde17f6bbc5b7228fb5",
+      "content": "Donald, don’t forget, I worked with Obama. We got things done together.",
+      "status": "sent",
+      "timestamp": "2024-09-28T00:47:29.123Z",
+      "nameFile": "1727484449146-fbc76902aad6581294687d3eb6dd264c_xl.webp"
+    },
+    {
+      "senderId": "66d2b9749d406c809160a727",
+      "content": "Yeah, Joe, but I ran the show solo and made America great. Obama’s not here to help you now!!",
+      "status": "sent",
+      "timestamp": "2024-09-28T00:47:49.848Z"
+    },
+    {
+      "senderId": "66d01bde17f6bbc5b7228fb5",
+      "content": "Well, we built a strong foundation, and now I’m focused on moving America forward.",
+      "status": "sent",
+      "timestamp": "2024-09-28T00:48:03.071Z"
+    },
+    {
+      "senderId": "66d2b9749d406c809160a727",
+      "content": "Forward? Your policies are dragging us back, Joe.",
+      "status": "sent",
+      "timestamp": "2024-09-28T00:48:15.514Z"
+    },
+    {
+      "senderId": "66d01bde17f6bbc5b7228fb5",
+      "content": "We’re fixing what was broken and investing in the future, Donald.",
+      "status": "sent",
+      "timestamp": "2024-09-28T00:48:43.219Z"
+    },
+    {
+      "senderId": "66d2b9749d406c809160a727",
+      "content": "",
+      "status": "sent",
+      "timestamp": "2024-09-28T00:49:55.710Z",
+      "nameFile": "1727484595727-636224442270276069-Dorian-Thompson-06.webp"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "66f7563164d6217c9496e7d3"
+  },
+  "participants": [
+    {
+      "$oid": "66f7561564d6217c9496e7d2"
+    },
+    {
+      "$oid": "66d01bde17f6bbc5b7228fb5"
+    }
+  ],
+  "messages": []
+},
+{
+  "_id": {
+    "$oid": "66f756cb64d6217c9496e7d5"
+  },
+  "participants": [
+    {
+      "$oid": "66f756b164d6217c9496e7d4"
+    },
+    {
+      "$oid": "66d2b9749d406c809160a727"
+    }
+  ],
+  "messages": [
+    {
+      "senderId": "66d2b9749d406c809160a727",
+      "content": "hey Melina",
+      "status": "sent",
+      "timestamp": "2024-09-28T17:51:53.898Z"
+    },
+    {
+      "senderId": "66f756b164d6217c9496e7d4",
+      "content": "hey Trump",
+      "status": "sent",
+      "timestamp": "2024-09-28T17:52:01.481Z"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "66f76f4e3a752fdb4da3b2ef"
+  },
+  "participants": [
+    {
+      "$oid": "66f76f1e3a752fdb4da3b2ee"
+    },
+    {
+      "$oid": "66d79c5874ca2cbdd7bcf9bc"
+    }
+  ],
+  "messages": [
+    {
+      "senderId": "66d79c5874ca2cbdd7bcf9bc",
+      "content": "hello",
+      "status": "sent",
+      "timestamp": "2024-09-28T02:53:06.221Z"
+    },
+    {
+      "senderId": "66d79c5874ca2cbdd7bcf9bc",
+      "content": "zaki",
+      "status": "sent",
+      "timestamp": "2024-09-28T02:53:12.631Z"
+    },
+    {
+      "senderId": "66f76f1e3a752fdb4da3b2ee",
+      "content": "nothing",
+      "status": "sent",
+      "timestamp": "2024-09-28T02:53:17.578Z"
+    },
+    {
+      "senderId": "66f76f1e3a752fdb4da3b2ee",
+      "content": "",
+      "status": "sent",
+      "timestamp": "2024-09-28T02:55:43.752Z",
+      "nameFile": "1727492143770-drive.jpg"
+    },
+    {
+      "senderId": "66d79c5874ca2cbdd7bcf9bc",
+      "content": "nothing",
+      "status": "sent",
+      "timestamp": "2024-09-28T04:39:04.265Z"
+    },
+    {
+      "senderId": "66d79c5874ca2cbdd7bcf9bc",
+      "content": "helo worl",
+      "status": "sent",
+      "timestamp": "2024-09-28T04:39:26.861Z"
+    },
+    {
+      "senderId": "66f76f1e3a752fdb4da3b2ee",
+      "content": "nothing",
+      "status": "sent",
+      "timestamp": "2024-09-28T04:39:29.850Z"
+    },
+    {
+      "senderId": "66d79c5874ca2cbdd7bcf9bc",
+      "content": "",
+      "status": "sent",
+      "timestamp": "2024-09-28T04:39:38.160Z",
+      "nameFile": "1727498378190-bayden.png"
+    },
+    {
+      "senderId": "66d79c5874ca2cbdd7bcf9bc",
+      "content": "",
+      "status": "sent",
+      "timestamp": "2024-09-28T04:51:26.621Z",
+      "nameFile": "1727499086641-person.png"
+    },
+    {
+      "senderId": "66d79c5874ca2cbdd7bcf9bc",
+      "content": "nothing",
+      "status": "sent",
+      "timestamp": "2024-09-28T21:19:57.277Z"
+    },
+    {
+      "senderId": "66f76f1e3a752fdb4da3b2ee",
+      "content": "yes",
+      "status": "sent",
+      "timestamp": "2024-09-28T21:20:00.747Z"
+    },
+    {
+      "senderId": "66d79c5874ca2cbdd7bcf9bc",
+      "content": "hello222",
+      "status": "sent",
+      "timestamp": "2024-09-28T21:20:12.546Z"
+    },
+    {
+      "senderId": "66d79c5874ca2cbdd7bcf9bc",
+      "content": "",
+      "status": "sent",
+      "timestamp": "2024-09-28T21:20:19.826Z",
+      "nameFile": "1727558419853-download.jpg"
+    }
+  ]
+}]

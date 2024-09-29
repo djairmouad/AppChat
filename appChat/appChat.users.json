@@ -1,0 +1,90 @@
+[{
+  "_id": {
+    "$oid": "66d01bde17f6bbc5b7228fb5"
+  },
+  "email": "Biden@gmail.com",
+  "password": "BidenBiden@",
+  "name": "Biden ",
+  "Friends": [
+    {
+      "$oid": "66d2b9749d406c809160a727"
+    },
+    {
+      "$oid": "66f7561564d6217c9496e7d2"
+    }
+  ],
+  "profileImage": "1726187080617-bayden.png"
+},
+{
+  "_id": {
+    "$oid": "66d2b9749d406c809160a727"
+  },
+  "name": "Trump",
+  "email": "Trump@gmail.com",
+  "password": "Trump@",
+  "Friends": [
+    {
+      "$oid": "66d01bde17f6bbc5b7228fb5"
+    },
+    {
+      "$oid": "66f756b164d6217c9496e7d4"
+    }
+  ],
+  "profileImage": "1726187093349-trump.png"
+},
+{
+  "_id": {
+    "$oid": "66d79c5874ca2cbdd7bcf9bc"
+  },
+  "name": "zaki",
+  "email": "zakizaki@gmail.com",
+  "password": "zakizaki@",
+  "Friends": [
+    {
+      "$oid": "66f76f1e3a752fdb4da3b2ee"
+    }
+  ],
+  "profileImage": "1727498324237-denzel-wc.jpg"
+},
+{
+  "_id": {
+    "$oid": "66f7561564d6217c9496e7d2"
+  },
+  "name": "Jill",
+  "email": "JillBiden@gmail.com",
+  "password": "JillBiden@",
+  "profileImage": "1727485485024-jill_biden.jpg",
+  "Friends": [
+    {
+      "$oid": "66d01bde17f6bbc5b7228fb5"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "66f756b164d6217c9496e7d4"
+  },
+  "name": "Melania",
+  "email": "Melania@gmail.com",
+  "password": "Melania@",
+  "profileImage": "1727485632932-download.jpg",
+  "Friends": [
+    {
+      "$oid": "66d2b9749d406c809160a727"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "66f76f1e3a752fdb4da3b2ee"
+  },
+  "name": "fateh",
+  "email": "dafiFateh@gmail.com",
+  "password": "dafiFateh@",
+  "profileImage": "1727491906527-download.jpg",
+  "Friends": [
+    {
+      "$oid": "66d79c5874ca2cbdd7bcf9bc"
+    }
+  ]
+}]

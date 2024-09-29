@@ -62,8 +62,8 @@ export default function SideBare() {
                     <Modal open={show} onClose={onClose}>
                         <div className=" flex flex-col gap-3 ">
                         <div className="flex flex-col w-full justify-center items-center ">
-                            <img className=" w-28 h-28 rounded-full opacity-70 " src={"http://localhost:5000/upload/"+infoCaller.profileImage}></img>
-                            <p className=" font-medium text-black  ">{infoCaller.name}</p>
+                            <img className=" w-28 h-28 rounded-full " src={"http://localhost:5000/upload/"+infoCaller.profileImage}></img>
+                            <p className=" font-medium text-white   ">{infoCaller.name}</p>
                         </div>
                         <div className="flex gap-3 w-56 bg-transparent">
                             <button className="py-1 px-3 font-medium outline-none rounded-lg border w-1/2 bg-green-500 text-white" onClick={()=>handelCall(caller)}>
